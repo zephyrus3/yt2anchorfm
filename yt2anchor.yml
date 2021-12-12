@@ -1,0 +1,11 @@
+version: '3'
+
+services:
+  yt2anchor:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    env_file:
+      - ./.env
+    volumes:
+      - ./episode.json:/data/episode.json
