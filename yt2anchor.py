@@ -18,9 +18,11 @@ config = dotenv_values(".env")
 if config:
     ANCHOR_EMAIL = config['ANCHOR_EMAIL']
     ANCHOR_PASSWORD = config['ANCHOR_PASSWORD']
+    EPISODE_PATH = config['EPISODE_PATH']
 else:
     ANCHOR_EMAIL = os.getenv('ANCHOR_EMAIL', "")
     ANCHOR_PASSWORD = os.getenv('ANCHOR_PASSWORD', "")
+    EPISODE_PATH = os.getenv('EPISODE_PATH', "./")
 
 EPISODE_JSON = 'episode.json'
 
@@ -34,12 +36,13 @@ if __name__ == "__main__":
     logging.basicConfig(format="%(asctime)s  [%(levelname)s]: %(message)s",
                         level=logging.INFO)
 
+    episode_path = os.path.join(os.path.abspath(EPISODE_PATH), EPISODE_JSON)
     cleanup(yt_helper.DEFAULT_AUDIO_FILENAME)
 
-    logger.info(f"Loading {EPISODE_JSON}")
+    logger.info(f"Loading {episode_path}")
 
     episodeInfo = None
-    with open(EPISODE_JSON) as f:
+    with open(episode_path) as f:
         episodeInfo = json.load(f)
 
     ytVideoInfo = yt_helper.getVideoInfo(episodeInfo["id"])
