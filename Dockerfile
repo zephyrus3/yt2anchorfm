@@ -3,9 +3,9 @@ FROM python:3.8-alpine
 RUN apk update && apk add build-base libffi-dev ffmpeg firefox \
 && mkdir /data
 
-COPY anchor_selenium.py /data/anchor_selenium.py
-COPY yt_helper.py /data/yt_helper.py
+COPY anchorfm_helper.py /data/anchorfm_helper.py
 COPY yt2anchor.py /data/yt2anchor.py
+COPY yt_helper.py /data/yt_helper.py
 COPY requirements.txt /data/requirements.txt
 
 COPY entrypoint.sh /data/entrypoint.sh
