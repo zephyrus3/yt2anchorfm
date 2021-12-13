@@ -19,10 +19,12 @@ if config:
     ANCHOR_EMAIL = config['ANCHOR_EMAIL']
     ANCHOR_PASSWORD = config['ANCHOR_PASSWORD']
     EPISODE_PATH = config['EPISODE_PATH']
+    KEEP_EPISODES_NUM = int(config['KEEP_EPISODES_NUM'])
 else:
     ANCHOR_EMAIL = os.getenv('ANCHOR_EMAIL', "")
     ANCHOR_PASSWORD = os.getenv('ANCHOR_PASSWORD', "")
     EPISODE_PATH = os.getenv('EPISODE_PATH', "./")
+    KEEP_EPISODES_NUM = int(os.getenv('KEEP_EPISODES_NUM', '0'))
 
 EPISODE_JSON = 'episode.json'
 
@@ -36,8 +38,9 @@ if __name__ == "__main__":
     logging.basicConfig(format="%(asctime)s  [%(levelname)s]: %(message)s",
                         level=logging.INFO)
 
-    episode_path = os.path.join(os.path.abspath(EPISODE_PATH), EPISODE_JSON)
     cleanup(yt_helper.DEFAULT_AUDIO_FILENAME)
+
+    episode_path = os.path.join(os.path.abspath(EPISODE_PATH), EPISODE_JSON)
 
     logger.info(f"Loading {episode_path}")
 
@@ -58,9 +61,13 @@ if __name__ == "__main__":
 
     try:
         anchor = AnchorFmHelper(driver, ANCHOR_EMAIL, ANCHOR_PASSWORD)
-        anchor.loggin_anchor()
+        anchor.logging_anchor()
         anchor.upload_audio(audioPath)
-        anchor.fill_episode_data(videoInfo['title'], videoInfo['description'])
+        anchor.publish_episode(videoInfo['title'], videoInfo['description'])
+
+        if KEEP_EPISODES_NUM is not None and KEEP_EPISODES_NUM > 0:
+            anchor.remove_episodes(KEEP_EPISODES_NUM)
+
     finally:
         driver.quit()
         cleanup(yt_helper.DEFAULT_AUDIO_FILENAME)

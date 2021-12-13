@@ -5,7 +5,8 @@ import os
 
 logger = logging.getLogger("YT_HELPER")
 YT_URL = 'https://www.youtube.com/watch?v='
-DEFAULT_AUDIO_FILENAME = 'episode.mp3'
+DEFAULT_FILENAME = "episode"
+DEFAULT_AUDIO_FILENAME = DEFAULT_FILENAME + '.mp3'
 
 
 def treat_episode_json(episodeInfo, episodeYtInfo):
@@ -34,6 +35,7 @@ def getVideoInfo(video_id):
 
 
 def download_audio(video_info):
+    episode_name = f"{DEFAULT_FILENAME}{video_info['id']}"
     ydl_opts = {
         'format':
         'bestaudio/best',
@@ -42,6 +44,8 @@ def download_audio(video_info):
             'preferredcodec': 'mp3',
             'preferredquality': '192',
         }],
+        'outtmpl':
+        episode_name + '.%(ext)s',
         'logger':
         logger,
     }
@@ -52,8 +56,7 @@ def download_audio(video_info):
 
         if ret == 0:
             logger.info("Renaming episode audio file")
-            os.rename(f"{video_info['title']} [{video_info['id']}].mp3",
-                      DEFAULT_AUDIO_FILENAME)
+            os.rename(f"{episode_name}.mp3", DEFAULT_AUDIO_FILENAME)
             return os.path.abspath(DEFAULT_AUDIO_FILENAME)
 
         raise Exception(f"Youtube Video download failed with error: {ret}")
