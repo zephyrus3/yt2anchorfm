@@ -39,6 +39,11 @@ runs:
     - name: Run yt2anchor.py
       run: |
         python yt2anchorfm/yt2anchor.py
+      env:
+        ANCHOR_EMAIL: ${{inputs.ANCHOR_EMAIL}}
+        ANCHOR_PASSWORD: ${{inputs.ANCHOR_PASSWORD}}
+        EPISODE_PATH: ${{inputs.EPISODE_PATH}}
+        KEEP_EPISODES_NUM: ${{inputs.KEEP_EPISODES_NUM}}
       shell: bash
 
 inputs:
