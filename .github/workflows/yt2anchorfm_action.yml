@@ -1,18 +1,47 @@
+
 name: 'yt2anchor - Upload Episode'
 on:
   push:
     paths:
       - episode.json
     branches: [main]
+
 jobs:
-  upload_episode:
+  build:
+
     runs-on: ubuntu-latest
+
     steps:
-      - uses: actions/checkout@v2
-      - name: Upload Episode from YouTube To Anchor.Fm
-        uses: zephyrus3/yt2anchorfm@main
-        env:
+    - uses: actions/checkout@v2
+
+    - name: Set up Python 3.8.2
+      uses: actions/setup-python@v2
+      with:
+        python-version: 3.8.2
+
+    - name: geckodriver/firefox
+      run: |
+        echo "geckodriver/firefox"
+        which geckodriver
+        geckodriver --version
+        which firefox
+        firefox --version
+
+    - name: Install ffmpeg
+      run: |
+        sudo apt-get update
+        sudo apt-get install --no-install-recommends -y ffmpeg
+
+    - name: Install python dependencies
+      run: |
+        python -m pip install --upgrade pip
+        pip install -r requirements.txt
+
+    - name: Run yt2anchor.py
+      run: |
+        python yt2anchor.py
+      env:
           ANCHOR_EMAIL: ${{ secrets.ANCHOR_EMAIL }}
           ANCHOR_PASSWORD: ${{ secrets.ANCHOR_PASSWORD }}
-          EPISODE_PATH: /github/workspace
+          EPISODE_PATH: ./
           KEEP_EPISODES_NUM: 2
