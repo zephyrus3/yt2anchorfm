@@ -14,5 +14,5 @@ jobs:
         env:
           ANCHOR_EMAIL: ${{ secrets.ANCHOR_EMAIL }}
           ANCHOR_PASSWORD: ${{ secrets.ANCHOR_PASSWORD }}
-          EPISODE_PATH: ${{ secrets.EPISODE_PATH }}
+          EPISODE_PATH: /github/workspace
           KEEP_EPISODES_NUM: 2
