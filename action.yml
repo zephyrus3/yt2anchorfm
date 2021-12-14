@@ -4,38 +4,42 @@ description: 'yt2anchorfm helps you to upload an audio file from a given youtube
 runs:
   using: 'composite'
   steps:
-    - uses: actions/checkout@v2
+    - name: Cloning yt2anchorfm repo
+      uses: actions/checkout@v2
+      with:
+        repository: zephyrus3/yt2anchorfm
+        path: yt2anchorfm
 
     - name: Set up Python 3.8.2
       uses: actions/setup-python@v2
       with:
         python-version: 3.8.2
 
-    - name: geckodriver/firefox
+    - name: Check geckodriver/firefox
       run: |
         echo "geckodriver/firefox"
         which geckodriver
         geckodriver --version
         which firefox
         firefox --version
+      shell: bash
 
     - name: Install ffmpeg
       run: |
         sudo apt-get update
         sudo apt-get install --no-install-recommends -y ffmpeg
+      shell: bash
 
     - name: Install python dependencies
       run: |
         python -m pip install --upgrade pip
-        pip install -r requirements.txt
+        pip install -r yt2anchorfm/requirements.txt
+      shell: bash
 
     - name: Run yt2anchor.py
       run: |
-        python yt2anchor.py
-      with:
-          ANCHOR_EMAIL: ${{ secrets.ANCHOR_EMAIL }}
-          ANCHOR_PASSWORD: ${{ secrets.ANCHOR_PASSWORD }}
-          EPISODE_PATH: ${{ github.workspace }}
+        python yt2anchorfm/yt2anchor.py
+      shell: bash
 
 inputs:
  ANCHOR_EMAIL:
