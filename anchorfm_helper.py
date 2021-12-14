@@ -138,6 +138,13 @@ class AnchorFmHelper:
                 item_text = items[0].find_element(
                     By.CSS_SELECTOR, EPISODE_TEXT_CSS_SELECTOR).text
 
+                if not item_text:
+                    logger.info("Empty episode title. Refreshing page...")
+                    self.driver.refresh()
+                    WebDriverWait(self.driver, DEFAULT_TIMEOUT).until(
+                        EC.staleness_of(items[0]))
+                    continue
+
                 if "untitled" in item_text.lower():
                     logger.info("Removing draft episode")
                     self.remove_episode(items[0])
@@ -159,24 +166,28 @@ class AnchorFmHelper:
                 self.driver.get(URL)
 
     def remove_episode(self, item: webdriver.remote.webelement.WebElement):
-        options_button = item.find_elements(By.CSS_SELECTOR, "button")[-1]
-        options_button.click()
+        buttons = item.find_elements(By.CSS_SELECTOR, "button")
 
-        delete_episode_button = WebDriverWait(
-            self.driver, DEFAULT_TIMEOUT).until(
-                EC.element_to_be_clickable(
-                    (By.XPATH,
-                     f'//button[normalize-space()="Delete episode"]')))
-        delete_episode_button.click()
+        if len(buttons):
+            options_button = buttons[-1]
+            options_button.click()
 
-        confirm_deletion_button = WebDriverWait(
-            self.driver, DEFAULT_TIMEOUT).until(
+            delete_episode_button = WebDriverWait(
+                self.driver, DEFAULT_TIMEOUT).until(
+                    EC.element_to_be_clickable(
+                        (By.XPATH,
+                         f'//button[normalize-space()="Delete episode"]')))
+            delete_episode_button.click()
+
+            confirm_deletion_button = WebDriverWait(
+                self.driver, DEFAULT_TIMEOUT
+            ).until(
                 EC.element_to_be_clickable(
                     (By.XPATH,
                      f'//button[normalize-space()="Yes, delete this episode"]'
                      )))
 
-        confirm_deletion_button.click()
+            confirm_deletion_button.click()
         self.driver.refresh()
 
         WebDriverWait(self.driver,
