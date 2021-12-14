@@ -38,6 +38,19 @@ if __name__ == "__main__":
     logging.basicConfig(format="%(asctime)s  [%(levelname)s]: %(message)s",
                         level=logging.INFO)
 
+    empty_anchor_vars = False
+
+    if not ANCHOR_EMAIL:
+        logger.error("Empty ANCHOR_EMAIL")
+        empty_anchor_vars = True
+
+    if not ANCHOR_PASSWORD:
+        logger.error("Empty ANCHOR_PASSWORD")
+        empty_anchor_vars = True
+
+    if empty_anchor_vars:
+        exit(1)
+
     cleanup(yt_helper.DEFAULT_AUDIO_FILENAME)
 
     episode_path = os.path.join(os.path.abspath(EPISODE_PATH), EPISODE_JSON)
