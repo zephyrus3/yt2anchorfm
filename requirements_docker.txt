@@ -1,0 +1,6 @@
+wheel
+selenium
+requests
+yt_dlp
+python-dotenv
+webdriver-manager

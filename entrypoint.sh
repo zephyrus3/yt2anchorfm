@@ -2,4 +2,4 @@
 cd /data
 
 pip install -r requirements.txt
-python yt2anchor.py
+python3 yt2anchor.py

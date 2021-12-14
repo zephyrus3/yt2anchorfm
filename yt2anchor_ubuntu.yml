@@ -4,7 +4,7 @@ services:
   yt2anchor:
     build:
       context: .
-      dockerfile: Dockerfile
+      dockerfile: Dockerfile.ubuntu
     env_file:
       - ./.env
     volumes:
