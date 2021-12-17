@@ -48,17 +48,17 @@ runs:
 
 inputs:
  ANCHOR_EMAIL:
-    description: 'Email used to logging on Anchor.fm'
+    description: 'Email used to log in to Anchor.fm'
     required: true
  ANCHOR_PASSWORD:
-    description: 'Password used to logging on Anchor.fm'
+    description: 'Password used to log in to Anchor.fm'
     required: true
  EPISODE_PATH:
-    description: 'Path used inside docker environment that points to the cloned repo'
+    description: "Path used inside the container environment that points to the cloned repo. Usually you don't want to change this."
     required: false
     default: '${{ github.workspace }}'
  KEEP_EPISODES_NUM:
-    description: 'Number of episodes to keep after an upload'
+    description: 'Number of latest episodes to keep after an upload. Drafts and older episodes will be deleted. Using zero will not remove any episodes.'
     required: false
     default: '0'
 
