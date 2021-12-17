@@ -2,6 +2,7 @@ version: '3'
 
 services:
   yt2anchor:
+    image: yt2anchor:ubuntu
     build:
       context: .
       dockerfile: Dockerfile.ubuntu
