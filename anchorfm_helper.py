@@ -22,7 +22,7 @@ class AnchorFmHelper:
         self.email = email
         self.password = password
 
-    def logging_anchor(self):
+    def log_in(self):
         URL = ANCHOR_URL + "login"
         logger.info(f"Loading page: {URL}")
         self.driver.get(URL)
@@ -52,39 +52,37 @@ class AnchorFmHelper:
                       DEFAULT_TIMEOUT).until(EC.title_contains("episode"))
 
         logger.info("Waiting for Upload file button to be available")
-        inputFile = WebDriverWait(self.driver, DEFAULT_TIMEOUT).until(
+        input_file = WebDriverWait(self.driver, DEFAULT_TIMEOUT).until(
             EC.presence_of_element_located(
                 (By.XPATH, "//input[@type='file']")))
 
         logger.info("Uploading audio file")
         self.driver.execute_script("arguments[0].style.display = 'block';",
-                                   inputFile)
-        inputFile.send_keys(audio_path)
+                                   input_file)
+        input_file.send_keys(audio_path)
 
         logger.info("Waiting for Save button to be available")
-        saveButton = WebDriverWait(self.driver, 200).until(
+        save_button = WebDriverWait(self.driver, 200).until(
             EC.element_to_be_clickable(
                 (By.CSS_SELECTOR, ".styles__saveButton___lWrNZ")))
 
-        saveButton.click()
+        save_button.click()
 
     def publish_episode(self, title, desc):
         logger.info('Waiting for title and description fields to be ready')
 
-        time.sleep(3)
-
-        titleField = WebDriverWait(self.driver, DEFAULT_TIMEOUT).until(
+        title_field = WebDriverWait(self.driver, DEFAULT_TIMEOUT).until(
             EC.presence_of_element_located((By.ID, "title")))
         logger.info(f'Adding title: "{title}"')
-        titleField.send_keys(title)
+        title_field.send_keys(title)
 
-        descField = WebDriverWait(self.driver, DEFAULT_TIMEOUT).until(
+        desc_field = WebDriverWait(self.driver, DEFAULT_TIMEOUT).until(
             EC.presence_of_element_located(
                 (By.CSS_SELECTOR, 'div[role="textbox"]')))
         # // Wait some time so any field refresh doesn't mess up with our input
 
         logger.info(f'Adding description: "{desc}"')
-        descField.send_keys(desc)
+        desc_field.send_keys(desc)
 
         logger.info("Publishing")
         found_end_btn = False
@@ -175,14 +173,14 @@ class AnchorFmHelper:
 
                     logger.info(f"Removing episode: {episode_title}")
 
-                    self.remove_episode(last_episode_item)
+                    self._remove_episode(last_episode_item)
 
                 else:
                     keep_removing = False
             except SeleniumExceptions.StaleElementReferenceException:
                 reload_page = True
 
-    def remove_episode(self, item: webdriver.remote.webelement.WebElement):
+    def _remove_episode(self, item: webdriver.remote.webelement.WebElement):
         buttons = item.find_elements(By.CSS_SELECTOR, "button")
 
         if len(buttons):

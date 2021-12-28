@@ -61,23 +61,23 @@ if __name__ == "__main__":
     with open(episode_path) as f:
         episodeInfo = json.load(f)
 
-    ytVideoInfo = yt_helper.getVideoInfo(episodeInfo["id"])
+    yt_video_info = yt_helper.getVideoInfo(episodeInfo["id"])
     # Merge video info from YouTube and Episode file
-    videoInfo = yt_helper.treat_episode_json(episodeInfo, ytVideoInfo)
-    audioPath = yt_helper.download_audio(ytVideoInfo)
+    video_info = yt_helper.treat_episode_json(episodeInfo, yt_video_info)
+    audio_path = yt_helper.download_audio(yt_video_info)
 
     # Using firefox driver so we don't have problems with emoji
     options = webdriver.FirefoxOptions()
     options.add_argument("--headless")
-    serviceDriver = Service(GeckoDriverManager().install())
-    driver = webdriver.Firefox(service=serviceDriver, options=options)
+    service_driver = Service(GeckoDriverManager().install())
+    driver = webdriver.Firefox(service=service_driver, options=options)
     driver.set_page_load_timeout(30)
 
     try:
         anchor = AnchorFmHelper(driver, ANCHOR_EMAIL, ANCHOR_PASSWORD)
-        anchor.logging_anchor()
-        anchor.upload_audio(audioPath)
-        anchor.publish_episode(videoInfo['title'], videoInfo['description'])
+        anchor.log_in()
+        anchor.upload_audio(audio_path)
+        anchor.publish_episode(video_info['title'], video_info['description'])
 
         if KEEP_EPISODES_NUM is not None and KEEP_EPISODES_NUM > 0:
             anchor.remove_episodes(KEEP_EPISODES_NUM)
