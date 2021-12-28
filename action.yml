@@ -1,6 +1,19 @@
 name: 'yt2anchorfm'
 author: 'Guilherme Costa'
 description: 'yt2anchorfm helps you to upload an audio file from a given youtube video automatically to your Anchor.fm account.'
+
+inputs:
+  anchor_email:
+    description: 'Email used to log in to Anchor.fm'
+    required: true
+  anchor_password:
+    description: 'Password used to log in to Anchor.fm'
+    required: true
+  keep_episodes_num:
+    description: 'Number of latest episodes to keep after an upload. Drafts and older episodes will be deleted. Using zero will not remove any episodes.'
+    required: false
+    default: '0'
+
 runs:
   using: 'composite'
   steps:
@@ -39,23 +52,12 @@ runs:
     - name: Run yt2anchor.py
       run: |
         python yt2anchorfm/yt2anchor.py
+      env:
+        ANCHOR_EMAIL: ${{ inputs.anchor_email }}
+        ANCHOR_PASSWORD: ${{ inputs.anchor_password }}
+        KEEP_EPISODES_NUM: ${{ inputs.keep_episodes_num }}
+        EPISODE_PATH: ${{ github.workspace }}
       shell: bash
-
-inputs:
- ANCHOR_EMAIL:
-    description: 'Email used to log in to Anchor.fm'
-    required: true
- ANCHOR_PASSWORD:
-    description: 'Password used to log in to Anchor.fm'
-    required: true
- EPISODE_PATH:
-    description: "Path used inside the container environment that points to the cloned repo. Usually you don't want to change this."
-    required: false
-    default: '${{ github.workspace }}'
- KEEP_EPISODES_NUM:
-    description: 'Number of latest episodes to keep after an upload. Drafts and older episodes will be deleted. Using zero will not remove any episodes.'
-    required: false
-    default: '0'
 
 branding:
   icon: 'upload-cloud'
