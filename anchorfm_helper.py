@@ -117,12 +117,29 @@ class AnchorFmHelper:
     def remove_episodes(self, keep_episodes_num):
         URL = ANCHOR_URL + "dashboard/episodes"
 
-        logger.info(f"Loading Episodes page: {URL}")
-        self.driver.get(URL)
-
         keep_removing = True
+        reload_page = True
 
         while keep_removing:
+
+            if reload_page:
+                try:
+                    logger.info(f"Loading Episodes page: {URL}")
+                    self.driver.get(URL)
+
+                    title = WebDriverWait(self.driver, DEFAULT_TIMEOUT).until(
+                        EC.presence_of_element_located(
+                            (By.CSS_SELECTOR, "h1"))).text
+
+                    if title.lower() != "episodes":
+                        logger.info("Page title not found. Refreshing page...")
+                        continue
+
+                    reload_page = False
+                except SeleniumExceptions.TimeoutException:
+                    logger.info("Page title not found. Refreshing page...")
+                    continue
+
             EPISODE_LIST_CSS_SELECTOR = ".css-axjbiw"
 
             try:
@@ -163,7 +180,7 @@ class AnchorFmHelper:
                 else:
                     keep_removing = False
             except SeleniumExceptions.StaleElementReferenceException:
-                self.driver.get(URL)
+                reload_page = True
 
     def remove_episode(self, item: webdriver.remote.webelement.WebElement):
         buttons = item.find_elements(By.CSS_SELECTOR, "button")
