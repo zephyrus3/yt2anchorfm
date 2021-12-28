@@ -71,6 +71,7 @@ if __name__ == "__main__":
     options.add_argument("--headless")
     serviceDriver = Service(GeckoDriverManager().install())
     driver = webdriver.Firefox(service=serviceDriver, options=options)
+    driver.set_page_load_timeout(30)
 
     try:
         anchor = AnchorFmHelper(driver, ANCHOR_EMAIL, ANCHOR_PASSWORD)
