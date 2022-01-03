@@ -40,33 +40,55 @@ class AnchorFmHelper:
         password_element.send_keys(self.password)
 
         password_element.send_keys(Keys.RETURN)
+
+        WebDriverWait(self.driver,
+                      DEFAULT_TIMEOUT).until(EC.staleness_of(password_element))
+
         WebDriverWait(self.driver,
                       DEFAULT_TIMEOUT).until(EC.title_contains("Dashboard"))
 
     def upload_audio(self, audio_path):
         URL = ANCHOR_URL + "dashboard/episode/new"
 
-        logger.info(f"Loading Upload page: {URL}")
-        self.driver.get(URL)
-        WebDriverWait(self.driver,
-                      DEFAULT_TIMEOUT).until(EC.title_contains("episode"))
+        attempts = 3
+        for attempt in range(1, attempts + 1):
+            try:
+                logger.info(
+                    f"Loading Upload page ({attempt}/{attempts}): {URL}")
+                self.driver.get(URL)
+                WebDriverWait(self.driver, DEFAULT_TIMEOUT).until(
+                    EC.title_contains("Create"))
 
-        logger.info("Waiting for Upload file button to be available")
-        input_file = WebDriverWait(self.driver, DEFAULT_TIMEOUT).until(
-            EC.presence_of_element_located(
-                (By.XPATH, "//input[@type='file']")))
+                logger.info("Waiting for Upload file button to be available")
+                input_file = WebDriverWait(self.driver, DEFAULT_TIMEOUT).until(
+                    EC.presence_of_element_located(
+                        (By.XPATH, "//input[@type='file']")))
 
-        logger.info("Uploading audio file")
-        self.driver.execute_script("arguments[0].style.display = 'block';",
-                                   input_file)
-        input_file.send_keys(audio_path)
+                logger.info("Uploading audio file")
+                self.driver.execute_script(
+                    "arguments[0].style.display = 'block';", input_file)
+                input_file.send_keys(audio_path)
 
-        logger.info("Waiting for Save button to be available")
-        save_button = WebDriverWait(self.driver, 200).until(
-            EC.element_to_be_clickable(
-                (By.CSS_SELECTOR, ".styles__saveButton___lWrNZ")))
+                logger.info("Waiting for Save button to be available")
 
-        save_button.click()
+                save_button = WebDriverWait(
+                    self.driver, DEFAULT_TIMEOUT * 3).until(
+                        EC.element_to_be_clickable(
+                            (By.CSS_SELECTOR, ".styles__saveButton___lWrNZ")))
+
+                save_button.click()
+                WebDriverWait(self.driver, DEFAULT_TIMEOUT).until(
+                    EC.staleness_of(save_button))
+
+                WebDriverWait(self.driver, DEFAULT_TIMEOUT).until(
+                    EC.text_to_be_present_in_element((By.XPATH, "//h1"),
+                                                     "Episode options"))
+                return
+            except:
+                if attempt < attempts:
+                    logger.warning("Some error ocurred. Trying again...")
+
+        raise RuntimeError("Could not Upload episode.")
 
     def publish_episode(self, title, desc):
         logger.info('Waiting for title and description fields to be ready')
@@ -109,8 +131,12 @@ class AnchorFmHelper:
                 "Failed to publish episode title/description. Aborting")
             raise Exception("Failed to publish episode")
 
-        WebDriverWait(self.driver, DEFAULT_TIMEOUT).until_not(
-            EC.presence_of_element_located((By.ID, "title")))
+        WebDriverWait(self.driver,
+                      DEFAULT_TIMEOUT).until(EC.staleness_of(desc_field))
+
+        WebDriverWait(self.driver, DEFAULT_TIMEOUT).until(
+            EC.text_to_be_present_in_element(
+                (By.XPATH, '//*[@id="modalTitle"]'), "Episode published"))
 
     def remove_episodes(self, keep_episodes_num):
         URL = ANCHOR_URL + "dashboard/episodes"
@@ -126,12 +152,8 @@ class AnchorFmHelper:
                     self.driver.get(URL)
 
                     title = WebDriverWait(self.driver, DEFAULT_TIMEOUT).until(
-                        EC.presence_of_element_located(
-                            (By.CSS_SELECTOR, "h1"))).text
-
-                    if title.lower() != "episodes":
-                        logger.info("Page title not found. Refreshing page...")
-                        continue
+                        EC.text_to_be_present_in_element(
+                            (By.CSS_SELECTOR, "h1"), "Episodes"))
 
                     reload_page = False
                 except SeleniumExceptions.TimeoutException:
@@ -162,7 +184,7 @@ class AnchorFmHelper:
 
                 if "untitled" in item_text.lower():
                     logger.info("Removing draft episode")
-                    self.remove_episode(items[0])
+                    self._remove_episode(items[0])
                     continue
 
                 if len(items) > keep_episodes_num:
