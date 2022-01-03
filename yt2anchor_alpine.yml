@@ -5,7 +5,7 @@ services:
     image: yt2anchor:alpine
     build:
       context: .
-      dockerfile: Dockerfile.alpine
+      dockerfile: docker/Dockerfile.alpine
     env_file:
       - ./.env
     volumes:

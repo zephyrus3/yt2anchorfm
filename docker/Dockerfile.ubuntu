@@ -34,9 +34,9 @@ RUN echo "===> Installing system dependencies..." && \
 COPY anchorfm_helper.py /data/anchorfm_helper.py
 COPY yt2anchor.py /data/yt2anchor.py
 COPY yt_helper.py /data/yt_helper.py
-COPY requirements_docker.txt /data/requirements.txt
+COPY docker/requirements_docker.txt /data/requirements.txt
 
-COPY entrypoint.sh /data/entrypoint.sh
+COPY docker/entrypoint.sh /data/entrypoint.sh
 
 RUN chmod 777 /data/entrypoint.sh
 ENV LC_ALL=en_US.UTF-8
