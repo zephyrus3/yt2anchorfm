@@ -134,9 +134,9 @@ class AnchorFmHelper:
         WebDriverWait(self.driver,
                       DEFAULT_TIMEOUT).until(EC.staleness_of(desc_field))
 
-        WebDriverWait(self.driver, DEFAULT_TIMEOUT).until(
-            EC.text_to_be_present_in_element(
-                (By.XPATH, '//*[@id="modalTitle"]'), "Episode published"))
+        # WebDriverWait(self.driver, DEFAULT_TIMEOUT).until(
+        #     EC.text_to_be_present_in_element(
+        #         (By.XPATH, '//*[@id="modalTitle"]'), "Episode published"))
 
     def remove_episodes(self, keep_episodes_num):
         URL = ANCHOR_URL + "dashboard/episodes"
