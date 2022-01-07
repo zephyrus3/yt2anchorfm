@@ -1,3 +1,5 @@
+[![pre-commit.ci status](https://results.pre-commit.ci/badge/github/zephyrus3/yt2anchorfm/main.svg)](https://results.pre-commit.ci/latest/github/zephyrus3/yt2anchorfm/main)
+
 # yt2anchorfm
 
 yt2anchorfm is an python module to upload an audio file from a given youtube video automatically to your Anchor.fm account.
