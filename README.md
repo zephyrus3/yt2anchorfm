@@ -60,24 +60,25 @@ Then you can add under the `.github/workflows` directory this file:
 
 main.yml
 ```yml
-name: 'Upload Episode from YouTube To Anchor.Fm'
+name: 'yt2anchorfm - Upload Episode'
 
 on:
   push:
-    paths:
+    paths: 
       - episode.json
     branches: [main]
 
 jobs:
   upload_episode:
     runs-on: ubuntu-latest
+
     steps:
       - uses: actions/checkout@v2
-      - name: Upload Episode from YouTube To Anchor.Fm
+      - name: yt2anchorfm - Upload Episode from YouTube To Anchor.Fm
         uses: zephyrus3/yt2anchorfm@main
-        env:
-          ANCHOR_EMAIL: ${{ secrets.ANCHOR_EMAIL }}
-          ANCHOR_PASSWORD: ${{ secrets.ANCHOR_PASSWORD }}
+        with:
+          anchor_email: ${{ secrets.ANCHOR_EMAIL }}
+          anchor_password: ${{ secrets.ANCHOR_PASSWORD }}
 ```
 
 ### Local
