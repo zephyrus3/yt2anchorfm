@@ -17,6 +17,7 @@ DEFAULT_TIMEOUT = 60
 
 
 class AnchorFmHelper:
+
     def __init__(self, driver, email, password):
         self.driver = driver
         self.email = email
