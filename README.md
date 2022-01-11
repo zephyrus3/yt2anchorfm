@@ -66,7 +66,7 @@ name: 'yt2anchorfm - Upload Episode'
 
 on:
   push:
-    paths: 
+    paths:
       - episode.json
     branches: [main]
 
