@@ -75,7 +75,7 @@ class AnchorFmHelper:
                 save_button = WebDriverWait(
                     self.driver, DEFAULT_TIMEOUT * 3).until(
                         EC.element_to_be_clickable(
-                            (By.CSS_SELECTOR, ".styles__saveButton___lWrNZ")))
+                            (By.XPATH, '//button[text()="Save episode"]')))
 
                 save_button.click()
                 WebDriverWait(self.driver, DEFAULT_TIMEOUT).until(
@@ -135,9 +135,10 @@ class AnchorFmHelper:
         WebDriverWait(self.driver,
                       DEFAULT_TIMEOUT).until(EC.staleness_of(desc_field))
 
-        # WebDriverWait(self.driver, DEFAULT_TIMEOUT).until(
-        #     EC.text_to_be_present_in_element(
-        #         (By.XPATH, '//*[@id="modalTitle"]'), "Episode published"))
+        WebDriverWait(self.driver, DEFAULT_TIMEOUT).until(
+            EC.text_to_be_present_in_element(
+                (By.XPATH, '//*[@id="wordpress-share-modal-title"]'),
+                "Episode published"))
 
     def remove_episodes(self, keep_episodes_num):
         URL = ANCHOR_URL + "dashboard/episodes"
