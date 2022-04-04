@@ -76,8 +76,9 @@ if __name__ == "__main__":
     try:
         anchor = AnchorFmHelper(driver, ANCHOR_EMAIL, ANCHOR_PASSWORD)
         anchor.log_in()
-        anchor.upload_audio(audio_path)
-        anchor.publish_episode(video_info['title'], video_info['description'])
+        anchor.upload_audio()
+        anchor.publish_episode(video_info['title'], video_info['description'],
+                               audio_path)
 
         if KEEP_EPISODES_NUM is not None and KEEP_EPISODES_NUM > 0:
             anchor.remove_episodes(KEEP_EPISODES_NUM)

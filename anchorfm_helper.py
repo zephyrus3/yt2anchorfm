@@ -18,57 +18,82 @@ DEFAULT_TIMEOUT = 60
 
 class AnchorFmHelper:
 
-    def __init__(self, driver, email, password):
+    def __init__(self, driver, email, password, max_retries=5):
         self.driver = driver
         self.email = email
         self.password = password
+        self.max_retries = max_retries
 
     def log_in(self):
         URL = ANCHOR_URL + "login"
-        logger.info(f"Loading page: {URL}")
-        self.driver.get(URL)
 
-        logger.info("Waiting for page elements to be ready")
-        email_element = WebDriverWait(self.driver, DEFAULT_TIMEOUT).until(
-            EC.presence_of_element_located((By.ID, 'email')))
+        for retry_cnt in range(0, self.max_retries):
+            try:
+                logger.info(f"Loading page: {URL}")
+                self.driver.get(URL)
+                logger.info("Waiting for page elements to be ready")
+                email_element = WebDriverWait(
+                    self.driver, DEFAULT_TIMEOUT).until(
+                        EC.presence_of_element_located((By.ID, 'email')))
 
-        password_element = self.driver.find_element(By.ID, "password")
+                password_element = self.driver.find_element(By.ID, "password")
 
-        logger.info("Inserting email")
-        email_element.send_keys(self.email)
+                logger.info("Inserting email")
+                email_element.send_keys(self.email)
 
-        logger.info("Inserting password")
-        password_element.send_keys(self.password)
+                logger.info("Inserting password")
+                password_element.send_keys(self.password)
 
-        password_element.send_keys(Keys.RETURN)
+                password_element.send_keys(Keys.RETURN)
 
-        WebDriverWait(self.driver,
-                      DEFAULT_TIMEOUT).until(EC.staleness_of(password_element))
+                WebDriverWait(self.driver, DEFAULT_TIMEOUT).until(
+                    EC.staleness_of(password_element))
 
-        WebDriverWait(self.driver,
-                      DEFAULT_TIMEOUT).until(EC.title_contains("Dashboard"))
+                WebDriverWait(self.driver, DEFAULT_TIMEOUT).until(
+                    EC.title_contains("Dashboard"))
+            except Exception as e:
+                logger.warn(f"Exception : {repr(e)}")
+                logger.info(f"Trying again ({retry_cnt}/{self.max_retries})")
+            else:
+                return
 
-    def upload_audio(self, audio_path):
+        raise RuntimeError("Max retries reached. Could not log in.")
+
+    def upload_audio_file(self, audio_path):
+        logger.info("Waiting for Upload file button to be available")
+
+        input_file_div = WebDriverWait(self.driver, DEFAULT_TIMEOUT).until(
+            EC.presence_of_element_located(
+                (By.CSS_SELECTOR, "div[data-testid='dropzone']")))
+
+        input_file = input_file_div.find_element(by=By.CSS_SELECTOR,
+                                                 value="input:nth-child(1)")
+
+        logger.info("Uploading audio file")
+
+        self.driver.execute_script("arguments[0].style.display = 'block';",
+                                   input_file)
+
+        input_file.send_keys(audio_path)
+
+        # wait for button with desc "Edit your audio"
+
+        WebDriverWait(self.driver, DEFAULT_TIMEOUT * 3).until(
+            EC.element_to_be_clickable(
+                (By.XPATH, f'//a[normalize-space()="Edit your audio"]')))
+        logger.info("Audio file upload finished")
+
+    def upload_audio(self):
         URL = ANCHOR_URL + "dashboard/episode/new"
 
-        attempts = 3
-        for attempt in range(1, attempts + 1):
+        for retry_cnt in range(1, self.max_retries + 1):
             try:
                 logger.info(
-                    f"Loading Upload page ({attempt}/{attempts}): {URL}")
+                    f"Loading Upload page ({retry_cnt}/{self.max_retries}): {URL}"
+                )
                 self.driver.get(URL)
                 WebDriverWait(self.driver, DEFAULT_TIMEOUT).until(
                     EC.title_contains("Create"))
-
-                logger.info("Waiting for Upload file button to be available")
-                input_file = WebDriverWait(self.driver, DEFAULT_TIMEOUT).until(
-                    EC.presence_of_element_located(
-                        (By.XPATH, "//input[@type='file']")))
-
-                logger.info("Uploading audio file")
-                self.driver.execute_script(
-                    "arguments[0].style.display = 'block';", input_file)
-                input_file.send_keys(audio_path)
 
                 logger.info("Waiting for Save button to be available")
 
@@ -84,14 +109,15 @@ class AnchorFmHelper:
                 WebDriverWait(self.driver, DEFAULT_TIMEOUT).until(
                     EC.text_to_be_present_in_element((By.XPATH, "//h1"),
                                                      "Episode options"))
+            except Exception as e:
+                logger.warn(f"Exception : {repr(e)}")
+                logger.info(f"Trying again ({retry_cnt}/{self.max_retries})")
+            else:
                 return
-            except:
-                if attempt < attempts:
-                    logger.warning("Some error ocurred. Trying again...")
 
         raise RuntimeError("Could not Upload episode.")
 
-    def publish_episode(self, title, desc):
+    def publish_episode(self, title, desc, audio_path):
         logger.info('Waiting for title and description fields to be ready')
 
         title_field = WebDriverWait(self.driver, DEFAULT_TIMEOUT).until(
@@ -106,6 +132,8 @@ class AnchorFmHelper:
 
         logger.info(f'Adding description: "{desc}"')
         desc_field.send_keys(desc)
+
+        self.upload_audio_file(audio_path)
 
         logger.info("Publishing")
         found_end_btn = False
@@ -143,6 +171,8 @@ class AnchorFmHelper:
     def remove_episodes(self, keep_episodes_num):
         URL = ANCHOR_URL + "dashboard/episodes"
 
+        logger.info("Removing Drafts and old Episodes")
+
         keep_removing = True
         reload_page = True
 
@@ -153,7 +183,7 @@ class AnchorFmHelper:
                     logger.info(f"Loading Episodes page: {URL}")
                     self.driver.get(URL)
 
-                    title = WebDriverWait(self.driver, DEFAULT_TIMEOUT).until(
+                    WebDriverWait(self.driver, DEFAULT_TIMEOUT).until(
                         EC.text_to_be_present_in_element(
                             (By.CSS_SELECTOR, "h1"), "Episodes"))
 
@@ -162,7 +192,8 @@ class AnchorFmHelper:
                     logger.info("Page title not found. Refreshing page...")
                     continue
 
-            EPISODE_LIST_CSS_SELECTOR = ".css-axjbiw"
+            EPISODE_LIST_CSS_SELECTOR = ".css-1ausnd5"
+            EPISODE_TEXT_CSS_SELECTOR = "div:nth-child(1) > div:nth-child(1)"
 
             try:
                 episodes_list = WebDriverWait(
@@ -173,7 +204,6 @@ class AnchorFmHelper:
                 items = episodes_list.find_elements(By.TAG_NAME, "li")
 
                 # remove all "Untitled" episodes
-                EPISODE_TEXT_CSS_SELECTOR = "div:nth-child(1) > div:nth-child(1)"
                 item_text = items[0].find_element(
                     By.CSS_SELECTOR, EPISODE_TEXT_CSS_SELECTOR).text
 
@@ -202,6 +232,8 @@ class AnchorFmHelper:
                 else:
                     keep_removing = False
             except SeleniumExceptions.StaleElementReferenceException:
+                reload_page = True
+            except SeleniumExceptions.TimeoutException:
                 reload_page = True
 
     def _remove_episode(self, item: webdriver.remote.webelement.WebElement):
