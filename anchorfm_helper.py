@@ -98,14 +98,16 @@ class AnchorFmHelper:
                 logger.info("Waiting for Save button to be available")
 
                 save_button = WebDriverWait(
-                    self.driver, DEFAULT_TIMEOUT * 3).until(
+                    self.driver, DEFAULT_TIMEOUT).until(
                         EC.element_to_be_clickable(
-                            (By.XPATH, '//button[text()="Save episode"]')))
+                            (By.XPATH, '//button/div[text()="Save episode"]')))
 
+                logger.info("Clicking on save button")
                 save_button.click()
                 WebDriverWait(self.driver, DEFAULT_TIMEOUT).until(
                     EC.staleness_of(save_button))
 
+                logger.info("Waiting for Episode Options page.")
                 WebDriverWait(self.driver, DEFAULT_TIMEOUT).until(
                     EC.text_to_be_present_in_element((By.XPATH, "//h1"),
                                                      "Episode options"))
