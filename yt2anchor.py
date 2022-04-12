@@ -69,7 +69,7 @@ if __name__ == "__main__":
     # Using firefox driver so we don't have problems with emoji
     options = webdriver.FirefoxOptions()
     options.add_argument("--headless")
-    
+
     try:
         service_driver = Service(GeckoDriverManager().install())
         driver = webdriver.Firefox(service=service_driver, options=options)
