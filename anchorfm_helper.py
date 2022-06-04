@@ -195,7 +195,7 @@ class AnchorFmHelper:
                     continue
 
             EPISODE_LIST_CSS_SELECTOR = ".css-1ausnd5"
-            EPISODE_TEXT_CSS_SELECTOR = "div:nth-child(1) > div:nth-child(1)"
+            EPISODE_TEXT_CSS_SELECTOR = "span"
 
             try:
                 episodes_list = WebDriverWait(
@@ -203,33 +203,39 @@ class AnchorFmHelper:
                         EC.presence_of_element_located(
                             (By.CSS_SELECTOR, EPISODE_LIST_CSS_SELECTOR)))
 
-                items = episodes_list.find_elements(By.TAG_NAME, "li")
+                items = episodes_list.find_elements(By.TAG_NAME, "tr")
+
+                head_item = items[1]
 
                 # remove all "Untitled" episodes
-                item_text = items[0].find_element(
-                    By.CSS_SELECTOR, EPISODE_TEXT_CSS_SELECTOR).text
+                fields = head_item.find_elements(By.TAG_NAME, "span")
+
+                if len(fields) != 0:
+                    item_text = fields[0].text
 
                 if not item_text:
                     logger.info("Empty episode title. Refreshing page...")
                     self.driver.refresh()
                     WebDriverWait(self.driver, DEFAULT_TIMEOUT).until(
-                        EC.staleness_of(items[0]))
+                        EC.staleness_of(head_item))
                     continue
 
                 if "untitled" in item_text.lower():
                     logger.info("Removing draft episode")
-                    self._remove_episode(items[0])
+                    self._remove_episode(head_item)
                     continue
 
                 if len(items) > keep_episodes_num:
                     last_episode_item = items[-1]
 
-                    episode_title = last_episode_item.find_element(
-                        By.CSS_SELECTOR, EPISODE_TEXT_CSS_SELECTOR).text
+                    fields = last_episode_item.find_elements(
+                        By.CSS_SELECTOR, EPISODE_TEXT_CSS_SELECTOR)
 
-                    logger.info(f"Removing episode: {episode_title}")
+                    if len(fields) != 0:
+                        episode_title = fields[0].text
+                        logger.info(f"Removing episode: {episode_title}")
 
-                    self._remove_episode(last_episode_item)
+                        self._remove_episode(last_episode_item)
 
                 else:
                     keep_removing = False
