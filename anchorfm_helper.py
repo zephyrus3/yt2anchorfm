@@ -205,6 +205,8 @@ class AnchorFmHelper:
 
                 items = episodes_list.find_elements(By.TAG_NAME, "tr")
 
+                # Removing header from episodes count
+                num_episodes = len(items) -1
                 head_item = items[1]
 
                 # remove all "Untitled" episodes
@@ -225,7 +227,7 @@ class AnchorFmHelper:
                     self._remove_episode(head_item)
                     continue
 
-                if len(items) > keep_episodes_num:
+                if num_episodes > keep_episodes_num:
                     last_episode_item = items[-1]
 
                     fields = last_episode_item.find_elements(
