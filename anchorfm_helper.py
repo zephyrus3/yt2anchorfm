@@ -8,7 +8,6 @@ from selenium.webdriver.common.action_chains import ActionChains
 import selenium.common.exceptions as SeleniumExceptions
 
 import logging
-import time
 
 ANCHOR_URL = 'https://anchor.fm/'
 logger = logging.getLogger("ANCHOR_SELENIUM")
@@ -130,10 +129,13 @@ class AnchorFmHelper:
         desc_field = WebDriverWait(self.driver, DEFAULT_TIMEOUT).until(
             EC.presence_of_element_located(
                 (By.CSS_SELECTOR, 'div[role="textbox"]')))
-        # // Wait some time so any field refresh doesn't mess up with our input
 
         logger.info(f'Adding description: "{desc}"')
-        desc_field.send_keys(desc)
+
+        # Split desc so we have no problem with bunch of new lines
+        for chunk in desc.split('\n'):
+            desc_field.send_keys(chunk)
+            ActionChains(self.driver).key_down(Keys.SHIFT).key_down(Keys.ENTER).key_up(Keys.SHIFT).key_up(Keys.ENTER).perform()
 
         self.upload_audio_file(audio_path)
 
