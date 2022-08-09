@@ -100,7 +100,7 @@ class AnchorFmHelper:
                 save_button = WebDriverWait(
                     self.driver, DEFAULT_TIMEOUT).until(
                         EC.element_to_be_clickable(
-                            (By.XPATH, '//button/div[text()="Save episode"]')))
+                            (By.XPATH, '//button/span[text()="Save episode"]')))
 
                 logger.info("Clicking on save button")
                 save_button.click()
