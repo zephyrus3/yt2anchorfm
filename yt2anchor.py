@@ -20,11 +20,13 @@ if config:
     ANCHOR_PASSWORD = config['ANCHOR_PASSWORD']
     EPISODE_PATH = config['EPISODE_PATH']
     KEEP_EPISODES_NUM = int(config['KEEP_EPISODES_NUM'])
+    HEADLESS = False if int(config['HEADLESS']) == 0 else True
 else:
     ANCHOR_EMAIL = os.getenv('ANCHOR_EMAIL', "")
     ANCHOR_PASSWORD = os.getenv('ANCHOR_PASSWORD', "")
     EPISODE_PATH = os.getenv('EPISODE_PATH', "./")
     KEEP_EPISODES_NUM = int(os.getenv('KEEP_EPISODES_NUM', '0'))
+    HEADLESS = True
 
 EPISODE_JSON = 'episode.json'
 
@@ -68,7 +70,10 @@ if __name__ == "__main__":
 
     # Using firefox driver so we don't have problems with emoji
     options = webdriver.FirefoxOptions()
-    options.add_argument("--headless")
+    options.set_preference("media.navigator.permission.disabled", True)
+    
+    if HEADLESS:
+        options.add_argument("--headless")
 
     try:
         service_driver = Service(GeckoDriverManager().install())
