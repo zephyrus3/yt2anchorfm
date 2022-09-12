@@ -213,6 +213,7 @@ class AnchorFmHelper:
 
                 # remove all "Untitled" episodes
                 fields = head_item.find_elements(By.TAG_NAME, "span")
+                item_text = None
 
                 if len(fields) != 0:
                     item_text = fields[0].text
