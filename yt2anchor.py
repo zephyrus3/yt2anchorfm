@@ -71,7 +71,7 @@ if __name__ == "__main__":
     # Using firefox driver so we don't have problems with emoji
     options = webdriver.FirefoxOptions()
     options.set_preference("media.navigator.permission.disabled", True)
-    
+
     if HEADLESS:
         options.add_argument("--headless")
 
