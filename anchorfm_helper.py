@@ -99,7 +99,8 @@ class AnchorFmHelper:
                 save_button = WebDriverWait(
                     self.driver, DEFAULT_TIMEOUT).until(
                         EC.element_to_be_clickable(
-                            (By.XPATH, '//button/span[text()="Save episode"]')))
+                            (By.XPATH,
+                             '//button/span[text()="Save episode"]')))
 
                 logger.info("Clicking on save button")
                 save_button.click()
@@ -135,7 +136,8 @@ class AnchorFmHelper:
         # Split desc so we have no problem with bunch of new lines
         for chunk in desc.split('\n'):
             desc_field.send_keys(chunk)
-            ActionChains(self.driver).key_down(Keys.SHIFT).key_down(Keys.ENTER).key_up(Keys.SHIFT).key_up(Keys.ENTER).perform()
+            ActionChains(self.driver).key_down(Keys.SHIFT).key_down(
+                Keys.ENTER).key_up(Keys.SHIFT).key_up(Keys.ENTER).perform()
 
         self.upload_audio_file(audio_path)
 
