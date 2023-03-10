@@ -29,7 +29,7 @@ Both `title` and `description` accepts emoji on them.
 ```
 {
   "id": "Wk47JOy3FNg",
-  "title": "yt2anchorfm is the best ⭐"
+  "title": "yt2anchorfm is the best ⭐",
   "description" : "😍 yt2anchorfm RULES!!! 😍"
 }
 ```
