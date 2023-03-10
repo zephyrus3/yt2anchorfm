@@ -49,7 +49,7 @@ class AnchorFmHelper:
                     EC.staleness_of(password_element))
 
                 WebDriverWait(self.driver, DEFAULT_TIMEOUT).until(
-                    EC.title_contains("Dashboard"))
+                    EC.url_contains("dashboard"))
             except Exception as e:
                 logger.warn(f"Exception : {repr(e)}")
                 logger.info(f"Trying again ({retry_cnt}/{self.max_retries})")
