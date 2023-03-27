@@ -172,7 +172,8 @@ class AnchorFmHelper:
         WebDriverWait(self.driver, DEFAULT_TIMEOUT).until(
             EC.text_to_be_present_in_element(
                 (By.XPATH, '//*[@id="wordpress-share-modal-title"]'),
-                "Episode published"))
+                "You’re all set"))
+                # "Episode published"))
 
     def remove_episodes(self, keep_episodes_num):
         URL = ANCHOR_URL + "dashboard/episodes"
