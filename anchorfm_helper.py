@@ -173,7 +173,7 @@ class AnchorFmHelper:
             EC.text_to_be_present_in_element(
                 (By.XPATH, '//*[@id="wordpress-share-modal-title"]'),
                 "You’re all set"))
-                # "Episode published"))
+        # "Episode published"))
 
     def remove_episodes(self, keep_episodes_num):
         URL = ANCHOR_URL + "dashboard/episodes"
