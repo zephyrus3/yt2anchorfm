@@ -9,7 +9,7 @@ import selenium.common.exceptions as SeleniumExceptions
 
 import logging
 
-ANCHOR_URL = 'https://anchor.fm/'
+ANCHOR_URL = 'https://podcasters.spotify.com/pod/'
 logger = logging.getLogger("ANCHOR_SELENIUM")
 
 DEFAULT_TIMEOUT = 60
@@ -83,7 +83,7 @@ class AnchorFmHelper:
         logger.info("Audio file upload finished")
 
     def upload_audio(self):
-        URL = ANCHOR_URL + "dashboard/episode/new"
+        URL = ANCHOR_URL + "dashboard/episode/new/record"
 
         for retry_cnt in range(1, self.max_retries + 1):
             try:
@@ -91,11 +91,13 @@ class AnchorFmHelper:
                     f"Loading Upload page ({retry_cnt}/{self.max_retries}): {URL}"
                 )
                 self.driver.get(URL)
+
+                logger.info("Waiting for Upload page to be fully available")
                 WebDriverWait(self.driver, DEFAULT_TIMEOUT).until(
-                    EC.title_contains("Create"))
+                    EC.text_to_be_present_in_element((By.XPATH, "//h1"),
+                                                     "Create your episode"))
 
                 logger.info("Waiting for Save button to be available")
-
                 save_button = WebDriverWait(
                     self.driver, DEFAULT_TIMEOUT).until(
                         EC.element_to_be_clickable(
@@ -171,9 +173,8 @@ class AnchorFmHelper:
 
         WebDriverWait(self.driver, DEFAULT_TIMEOUT).until(
             EC.text_to_be_present_in_element(
-                (By.XPATH, '//*[@id="wordpress-share-modal-title"]'),
+                (By.XPATH, '//*[@id="share-modal-title"]'),
                 "You’re all set"))
-        # "Episode published"))
 
     def remove_episodes(self, keep_episodes_num):
         URL = ANCHOR_URL + "dashboard/episodes"
