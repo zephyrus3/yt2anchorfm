@@ -13,7 +13,7 @@ def treat_episode_json(episodeInfo, episodeYtInfo):
     logger.info("Treating Episode Info")
 
     get_value = lambda key, infoLocal, infoYT: infoLocal[
-        key] if key in infoLocal and infoLocal[key] else infoYT[key]
+        key] if key in infoLocal and infoLocal[key] else infoYT.get(key, None)
 
     id = get_value("id", episodeInfo, episodeYtInfo)
     title = get_value("title", episodeInfo, episodeYtInfo)
@@ -21,7 +21,9 @@ def treat_episode_json(episodeInfo, episodeYtInfo):
     explicit_content = get_value("explicit_content", episodeInfo,
                                  episodeYtInfo)
 
-    if explicit_content not in ("true", "false"):
+    if explicit_content is None:
+        explicit_content = "false"
+    elif explicit_content not in ("true", "false"):
         explicit_content = "true" if explicit_content.lower(
         ) == 'explicit' else "false"
 
