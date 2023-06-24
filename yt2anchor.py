@@ -88,7 +88,7 @@ if __name__ == "__main__":
         anchor.log_in()
         anchor.upload_audio()
         anchor.publish_episode(video_info['title'], video_info['description'],
-                               audio_path)
+                               audio_path, video_info['explicit_content'])
 
         if KEEP_EPISODES_NUM is not None and KEEP_EPISODES_NUM > 0:
             anchor.remove_episodes(KEEP_EPISODES_NUM)

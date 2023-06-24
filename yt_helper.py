@@ -18,11 +18,18 @@ def treat_episode_json(episodeInfo, episodeYtInfo):
     id = get_value("id", episodeInfo, episodeYtInfo)
     title = get_value("title", episodeInfo, episodeYtInfo)
     desc = get_value("description", episodeInfo, episodeYtInfo)
+    explicit_content = get_value("explicit_content", episodeInfo,
+                                 episodeYtInfo)
+
+    if explicit_content not in ("true", "false"):
+        explicit_content = "true" if explicit_content.lower(
+        ) == 'explicit' else "false"
 
     return {
         "id": id,
         "title": title if title else "No Title",
-        "description": desc if desc else "No Description"
+        "description": desc if desc else "No Description",
+        "explicit_content": explicit_content
     }
 
 
