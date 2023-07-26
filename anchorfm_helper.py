@@ -225,6 +225,9 @@ class AnchorFmHelper:
         max_backoff = 8
         delay = 0.5
 
+        EPISODE_LIST_CSS_SELECTOR = "tr[data-encore-id=tableRow]"
+        EPISODE_TEXT_CSS_SELECTOR = "span"
+
         while keep_removing:
             if reload_page:
                 try:
@@ -240,17 +243,11 @@ class AnchorFmHelper:
                     logger.info("Page title not found. Refreshing page...")
                     continue
 
-            EPISODE_LIST_CSS_SELECTOR = ".css-1ausnd5"
-            EPISODE_TEXT_CSS_SELECTOR = "span"
-
             try:
-                episodes_list = WebDriverWait(
-                    self.driver, DEFAULT_TIMEOUT).until(
-                        # EC.presence_of_element_located(
-                        EC.visibility_of_element_located(
-                            (By.CSS_SELECTOR, EPISODE_LIST_CSS_SELECTOR)))
-
-                items = episodes_list.find_elements(By.TAG_NAME, "tr")
+                logger.info("Waiting episode list to be ready ...")
+                items = WebDriverWait(self.driver, DEFAULT_TIMEOUT).until(
+                    EC.visibility_of_all_elements_located(
+                        (By.CSS_SELECTOR, EPISODE_LIST_CSS_SELECTOR)))
 
                 # Removing header from episodes count
                 num_episodes = len(items) - 1
