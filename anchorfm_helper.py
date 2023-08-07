@@ -33,6 +33,12 @@ class AnchorFmHelper:
                 logger.info(f"Loading page: {URL}")
                 self.driver.get(URL)
                 logger.info("Waiting for page elements to be ready")
+                login_with_email_button = WebDriverWait(
+                    self.driver, DEFAULT_TIMEOUT).until(
+                        EC.element_to_be_clickable(
+                            (By.XPATH,
+                             '//button[text()="Log in with email"]')))
+                login_with_email_button.click()
                 email_element = WebDriverWait(
                     self.driver, DEFAULT_TIMEOUT).until(
                         EC.presence_of_element_located((By.ID, "email")))
